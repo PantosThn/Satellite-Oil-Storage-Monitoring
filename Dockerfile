@@ -1,6 +1,6 @@
 FROM python:3.8.10
 
-
+#copy the following files and folders
 COPY ./app /app
 COPY ./requirements.txt /requirements.txt
 COPY ./pipelines /pipelines
