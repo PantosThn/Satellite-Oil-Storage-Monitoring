@@ -18,6 +18,8 @@ from PIL import Image
 from app.model import create_trained_model, make_prediction
 import base64
 
+import pickle as pkl
+
 #https://www.pluralsight.com/tech-blog/porting-flask-to-fastapi-for-ml-model-serving/
 
 #rom app import ml
@@ -32,8 +34,9 @@ MODEL = create_trained_model(MODEL_PATH)
 
 app = FastAPI()
 
+
 #Rest API
-@app.post("/") #http POST
+@app.post("/prediction/") #http POST
 async def prediction_view(file:UploadFile = File(...), authorization = Header(None)):
     #verify_auth(authorization, settings)
     bytes_str =  io.BytesIO(await file.read()) #read image as a byte stream
@@ -41,9 +44,15 @@ async def prediction_view(file:UploadFile = File(...), authorization = Header(No
         img = Image.open(bytes_str)
     except:
         raise HTTPException(detail="Invalid image", status_code=400)
+    print(img)
+
+    pkl.dump(img, open('/tmp/image', 'wb'))
+
     image = np.array(img)
     fname = pathlib.Path(file.filename)
-    fext = fname.suffix
+    fext = fname.suffix or '.jpg'
+    print(fext)
+
     UPLOAD_DIR.mkdir(exist_ok=True)
 
     predictions = make_prediction(MODEL, image, fext)

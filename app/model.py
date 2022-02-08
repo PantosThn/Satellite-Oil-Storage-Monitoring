@@ -18,6 +18,13 @@ from tensorflow.keras.layers import (
 from tensorflow.keras.regularizers import l2
 import numpy as np
 import cv2
+from app.shadows_estimator import MultiTank
+
+from fastai.vision import *
+import torchvision.transforms as T
+import base64
+import PIL
+
 
 def DarknetConv(x, filters, size, strides=1, batch_norm=True):
     if strides == 1:
@@ -290,8 +297,8 @@ def create_model(size=416, channels=3):
     return model
 
 
-def create_trained_model(weights_path):
-    model = create_model()
+def create_trained_model(weights_path, size=416):
+    model = create_model(size)
     model.load_weights(weights_path)
 
     return model
@@ -303,8 +310,10 @@ def draw_outputs(img, outputs, class_names):
         'Floating Head Tank': 'FHT'
     }
 
-    boxes, objectness, classes, nums = outputs
-    boxes, objectness, classes, nums = boxes[0], objectness[0], classes[0], nums[0]
+    boxes, scores, volumes, classes, nums = outputs
+    volumes = [float(i) for i in volumes]
+    scores = np.array(scores)
+    boxes, scores, classes, nums = boxes[0], scores[0], classes[0], nums[0]
     wh = np.flip(img.shape[0:2])
     for i in range(nums):
         color = [0,0,0]
@@ -312,41 +321,69 @@ def draw_outputs(img, outputs, class_names):
         x2y2 = tuple((np.array(boxes[i][2:4]) * wh).astype(np.int32))
         color[int(classes[i])]=255
         img = cv2.rectangle(img, x1y1, x2y2, tuple(color), 2)
-        img = cv2.putText(img, '{} {:.2f}'.format(
+        img = cv2.putText(img, '{} {:.2f} V {:.2f}'.format(
             convert_name[class_names[int(classes[i])]],
-            objectness[i]),
+            scores[i],
+            volumes[i]),
             x1y1, cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255,255,255), 2)
     return img
 
-def make_prediction(MODEL, image, file_suffix, save_image=True):
+def make_prediction(MODEL, image, file_suffix, size=416, save_image=True):
     class_names = {0: 'Tank', 1: 'Tank Cluster', 2: 'Floating Head Tank'}
     gt_classes = ['Floating Head Tank', 'Tank', 'Tank Cluster']
 
     # 2. Collecting Predicted Bounding Boxes
     prediction = [[] for i in range(3)]
 
-    boxes, scores, classes, nums = detect(MODEL, image, 416)
+    boxes, scores, classes, nums = detect(MODEL, image, size)
+
+    width = 512
+    height = 512
+
+    Bboxes, Classes = [], []
+    for i in range(nums[0]):
+        xmin, ymin, xmax, ymax = tuple(np.array(boxes[0][i]))
+
+        xmin = int(round(xmin*width))
+        ymin = int(round(ymin*height))
+        xmax = int(round(xmax*width))
+        ymax = int(round(ymax*height))
+
+        class_name = str(class_names[int(classes[0][i])])
+        #Format: ymin, xmin, ymax, xmax
+        if(class_name == 'Floating Head Tank'):
+            Bboxes.append([ymin, xmin, ymax, xmax])
+            Classes.append(class_name)
+
+    im = Image(pil2tensor(image, dtype=np.float32).div_(255))
+
+    all_tanks = MultiTank(Bboxes, im)
+    volumes = all_tanks.get_volumes()
+
     for i in range(nums[0]):
         score = float(scores[0][i])
         coor = np.array(boxes[0][i])
+        volume = float(volumes[i])
         class_name = class_names[int(classes[0][i])]
         xmin, ymin, xmax, ymax = list(map(str, coor))
         bbox = xmin + " " + ymin + " " + xmax + " " + ymax
         prediction[gt_classes.index(class_name)].append(
             {"confidence": str(score),
+             "volumes": str(volume),
              "file_id": str(class_name),
              "bbox": str(bbox)
              })
 
     img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    img = draw_outputs(img, (boxes, scores, classes, nums), class_names)
-    #if save_image:
-    #    cv2.imwrite('app/1.jpg', img)
+    img = draw_outputs(img, (boxes, scores, volumes, classes, nums), class_names)
+    if save_image:
+        cv2.imwrite('app/1.jpg', img)
 
     retval, buffer = cv2.imencode(file_suffix, img)
     encoded_img = base64.b64encode(buffer)
 
     return {"data": prediction, "encoded_img": encoded_img}
+
 
 
 if __name__ == "__main__":
