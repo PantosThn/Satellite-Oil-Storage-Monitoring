@@ -22,10 +22,8 @@ import pickle as pkl
 
 #https://www.pluralsight.com/tech-blog/porting-flask-to-fastapi-for-ml-model-serving/
 
-#rom app import ml
-
 BASE_DIR = pathlib.Path(__file__).resolve().parent
-UPLOAD_DIR = BASE_DIR / "uploads"
+UPLOAD_DIR = BASE_DIR / "results"
 
 MODEL_DIR = BASE_DIR.parent / "models"
 YOLO_MODEL_PATH_DIR = MODEL_DIR / "yolov3"

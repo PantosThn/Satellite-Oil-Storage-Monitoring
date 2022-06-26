@@ -19,15 +19,9 @@ from tensorflow.keras.regularizers import l2
 import numpy as np
 import cv2
 from app.shadows_estimator import MultiTank
-
 from fastai.vision import *
 import torchvision.transforms as T
 import base64
-import PIL
-#from PIL import Image
-
-
-
 
 def DarknetConv(x, filters, size, strides=1, batch_norm=True):
     if strides == 1:
