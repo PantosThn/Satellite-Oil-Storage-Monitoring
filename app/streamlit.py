@@ -68,15 +68,15 @@ if page == "Estimate Volume":
         results = data['results']
         n_fht = len([i for i in results[0]])
 
-        diameter = col1.number_input('Set the average floating head tank diameter in meters', value=8)
-        height = col1.number_input('Set the average floating head tank height in meters', value=25)
+        diameter = col1.number_input('Set the average floating head tank diameter in meters', value=8., format="%.2f")
+        height = col1.number_input('Set the average floating head tank height in meters', value=25., format="%.2f")
         n_barrels = n_barrels_calculator(height, diameter)
 
         total_barrels = sum([float(i["volumes"])*n_barrels for i in results[0]])
 
         col1.metric('Number of Floating Head Tanks', n_fht)
-        col1.metric('Number of Total Barrels', int(total_barrels))
-        col3.image(img)
+        col1.metric('Number of Total Barrels', '{:,d}'.format(int(total_barrels)))
+        col3.image(img, caption="Floating Head Tanks detected with the YOLOv3 Model and Localized with Bounding Boxes", use_column_width="auto")
 
         st.header("JSON Response")
         st.write(data['results'])
