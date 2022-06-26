@@ -24,6 +24,9 @@ from fastai.vision import *
 import torchvision.transforms as T
 import base64
 import PIL
+#from PIL import Image
+
+
 
 
 def DarknetConv(x, filters, size, strides=1, batch_norm=True):
