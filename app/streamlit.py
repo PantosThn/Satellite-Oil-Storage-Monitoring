@@ -20,7 +20,7 @@ background-size: cover;
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
 st.sidebar.title("ECE DSML Thesis")
-st.sidebar.image("/home/thanos/dev/thesis_refactor/app/images/NTUA-logo.png", width=250)
+st.sidebar.image("/home/thanos/dev/thesis_refactor/app/images/NTUA-logo.png", width=200)
 st.sidebar.markdown("""___""")
 page = st.sidebar.selectbox('Page Navigator', ['Estimate Volume'])
 
