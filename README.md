@@ -136,7 +136,7 @@ In digital image processing, thresholding is one of the simplest methods of segm
 
 ![shadows_4](https://user-images.githubusercontent.com/26250049/187880594-420b223c-765a-4136-ae8f-7b31fd41695d.PNG)
 
-## Volume Estimation
+# Volume Estimation
 
 We then filter the regions present by certain heuristics.
 
@@ -145,6 +145,8 @@ The bounding box of the feature should intersect the bounding box of the tank. T
 The first two clear up small artifacts. The third deals with the fact that the Hessian filter sometimes creates regions in spaces that are otherwise empty.
 
 ![shadows_8](https://user-images.githubusercontent.com/26250049/187880582-942cf859-fbac-4b04-a34c-11af94cd9dcb.PNG)
+
+## Calculating Volume and Number of Barrels
 
 Volume is estimated as 1 minus the ratio of the smaller area to the larger area.
 The larger area corresponds to the exterior shadow of the tank, while the smaller area
@@ -172,4 +174,19 @@ for gas based on average shelf features. The characteristics of oil, gas, and NG
 over time and from field to field. In resource reports and other comparisons involving oil
 equivalents, however, a consistent and uniform conversion factor is applied to all fields
 and finds.
+
+# Conclusion
+
+In the method suggested in this work, remote sensing photos were converted into HSV
+images, and a ratio image was created to highlight the shadows. The ratio image was
+thresholded using the highest inter-class variance of the levels, followed by thresholding
+according to area and processing using morphological operators to produce the oil tank’s
+shadow.
+In the future, Hough transform can be tested to detect the radius of the tank’s top
+thus the tank’s volume can be determined with sufficient precision, we will do additional
+research on the nature of shadows in various color spaces and combine the texture
+characteristics of shadows in order to extract tank shadows from a larger variety of photos.
+The Hough transform and machine-learning-related techniques should be further coupled
+in the future to increase the accuracy of the tank identification rate and tank volume
+estimation.
 
