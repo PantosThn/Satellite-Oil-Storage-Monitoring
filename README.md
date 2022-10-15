@@ -98,19 +98,19 @@ results.
 
 ![results_1](https://user-images.githubusercontent.com/26250049/195983943-3c870730-ab9e-47c9-8dba-fb2ecf49c0f7.png)
 *A half empty tank*
-
+<br/><br/>
 ![results_2](https://user-images.githubusercontent.com/26250049/195984107-3ee1cecd-178c-43af-ab41-fc3206813862.png)
 *A full floating head tank*
-
+<br/><br/>
 ![results_3](https://user-images.githubusercontent.com/26250049/195984112-bf46d332-cd99-4a5d-985a-fcadcf0c6459.png)
 *An almost empty tank*
-
+<br/><br/>
 ![results_5](https://user-images.githubusercontent.com/26250049/195984117-a39d50d1-a9eb-47e9-8ffc-1f08c2ba1d93.png)
 *An empty floating head tank*
-
+<br/><br/>
 ![results_4](https://user-images.githubusercontent.com/26250049/187878276-c782cac0-d626-4de1-be8d-080fb43b126a.png)
 *Multiple Tanks detected*
-
+<br/><br/>
 # Shadow extraction algorithm
 
 Identified tanks will be run through a computer vision algorithm to extract the crescent shadows and estimate tank volumes. 
